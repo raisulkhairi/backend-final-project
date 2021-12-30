@@ -51,5 +51,6 @@ parentRoute.put(
 
 parentRoute.get("/", ParentController.getAllParentData);
 parentRoute.get("/:id", ParentController.getParentByID);
+parentRoute.get("/count", ParentController.parentCount);
 
 module.exports = parentRoute;

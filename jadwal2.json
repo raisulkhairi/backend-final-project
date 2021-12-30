@@ -1,0 +1,33 @@
+{
+  "tahun ajaran": "2012/2013",
+  "jadwal": ["jadwal-1", "jadwal-2"]
+}
+
+jadwal-1 = {
+  "id_Kelas": "213732891823", // nama kelas, wali kelas, mapel2
+  "senin": {
+    "fisika": "8-10",
+    "kimia": "10-12",
+    "matematika": "12-14"
+  },
+  "selasa": {
+    "fisika": "8-10",
+    "kimia": "10-12",
+    "matematika": "12-14"
+  },
+  "rabu": {
+    "fisika": "8-10",
+    "kimia": "10-12",
+    "matematika": "12-14"
+  },
+  "kamis": {
+    "fisika": "8-10",
+    "kimia": "10-12",
+    "matematika": "12-14"
+  },
+  "jumat": {
+    "fisika": "8-10",
+    "kimia": "10-12",
+    "matematika": "12-14"
+  }
+},

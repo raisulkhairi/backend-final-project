@@ -287,6 +287,13 @@ class ParentController {
     }
     res.send(parent);
   }
+  static async parentCount(req, res, next) {
+    const totalParent = await ParentModel.countDocuments();
+    if (!totalParent) {
+      return res.status(500).json({ success: false });
+    }
+    res.send({ totalParent });
+  }
 }
 
 module.exports = ParentController;
