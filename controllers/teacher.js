@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 
 const TeacherModel = require("../models/teacher");
 class TeacherController {
+  // Dilakukan Oleh Headmaster
   static async createNewTeacher(req, res, next) {
     // Random Password Handler
     const randomPassword = () => {
@@ -39,7 +40,6 @@ class TeacherController {
 
     try {
       const user_password = randomPassword();
-
       const result = await TeacherModel.create({
         first_name,
         last_name,
@@ -112,6 +112,8 @@ class TeacherController {
       next(error);
     }
   }
+
+  // Dilakukan Oleh Diri sendiri
   static async updateTeacher(req, res, next) {
     const userExist = await TeacherModel.findById(req.params.id);
     const {
@@ -165,6 +167,53 @@ class TeacherController {
     }
     res.send(user);
   }
+  // Dilakukan Oleh Headmaster
+  static async updateTeacher(req, res, next) {
+    const userExist = await TeacherModel.findById(req.params.id);
+    const {
+      first_name,
+      last_name,
+      gender,
+      date_of_birth,
+      blood_group,
+      religion,
+      addmission_date,
+      email,
+      address,
+      phone,
+      short_bio,
+    } = req.body;
+
+    // Image Handler
+    const fileName = req.file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+
+    const user = await TeacherModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        first_name,
+        last_name,
+        gender,
+        date_of_birth,
+        blood_group,
+        religion,
+        addmission_date,
+        email,
+        address,
+        phone,
+        short_bio,
+        password: newPassword,
+        image: `${basePath}${fileName}`,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).send("the teacher data cannot be updated");
+    }
+    res.send(user);
+  }
+
   static async getAllTeacher(req, res, next) {
     const teacherList = await TeacherModel.find();
     if (!teacherList) {
@@ -172,6 +221,7 @@ class TeacherController {
     }
     res.send(teacherList);
   }
+
   static async teacherCount(req, res, next) {
     const totalTeacher = await TeacherModel.countDocuments();
     if (!totalTeacher) {
@@ -179,6 +229,7 @@ class TeacherController {
     }
     res.send({ totalTeacher });
   }
+
   static async getTeacherByID(req, res, next) {
     const { id } = req.params;
     const teacher = await TeacherModel.findById(id);

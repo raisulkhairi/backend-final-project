@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 
 const StudentModel = require("../models/student");
 class StudentController {
+  // Dilakukan Oleh Headmaster
   static async createNewStudent(req, res, next) {
     // Random Password Handler
     const randomPassword = () => {
@@ -26,14 +27,11 @@ class StudentController {
       mother_name,
       date_of_birth,
       father_occupation,
-      roll,
       blood_group,
       religion,
       email,
       addmission_date,
       kelas,
-      section,
-      addmission_id,
       address,
       phone,
       short_bio,
@@ -55,14 +53,11 @@ class StudentController {
         mother_name,
         date_of_birth,
         father_occupation,
-        roll,
         blood_group,
         religion,
         email,
         addmission_date,
         kelas,
-        section,
-        addmission_id,
         address,
         phone,
         password: bcrypt.hashSync(user_password, 10),
@@ -87,17 +82,13 @@ class StudentController {
         <li>Mother Name: ${mother_name}</li>
         <li>Date of Birth: ${date_of_birth}</li>
         <li>Father Occupation: ${father_occupation}</li>
-        <li>Roll: ${roll}</li>
         <li>Blood Group: ${blood_group}</li>
         <li>Religion: ${religion}</li>
         <li>Email: ${email}</li>
         <li>Addmission Date: ${addmission_date}</li>
         <li>Class: ${kelas}</li>
-        <li>Section: ${section}</li>
-        <li>Addmission ID: ${addmission_id}</li>
         <li>Address: ${address}</li>
         <li>Phone: ${phone}</li>
-        <li>Short Bio: ${short_bio}</li>
         <li>Image: ${basePath}${fileName}</li>
         <li>Short Bio: ${short_bio}</li>
       </ul>
@@ -134,7 +125,7 @@ class StudentController {
       next(error);
     }
   }
-  // By Student
+  // Dilakukan Oleh Siswa itu sendiri
   static async editStudent(req, res, next) {
     const { id } = req.params;
     const {
@@ -145,18 +136,12 @@ class StudentController {
       mother_name,
       date_of_birth,
       father_occupation,
-      roll,
       blood_group,
       religion,
       email,
-      addmission_date,
-      kelas,
-      section,
-      addmission_id,
       address,
       phone,
       short_bio,
-      role,
       password,
     } = req.body;
 
@@ -182,18 +167,12 @@ class StudentController {
         mother_name,
         date_of_birth,
         father_occupation,
-        roll,
         blood_group,
         religion,
         email,
-        addmission_date,
-        kelas,
-        section,
-        addmission_id,
         address,
         phone,
         short_bio,
-        role,
         password: newPassword,
         image: `${basePath}${fileName}`,
       },
@@ -205,7 +184,6 @@ class StudentController {
     }
     res.send(user);
   }
-
   // By Headmaster
   static async editStudentByHeadmaster(req, res, next) {
     const { id } = req.params;
@@ -217,14 +195,11 @@ class StudentController {
       mother_name,
       date_of_birth,
       father_occupation,
-      roll,
       blood_group,
       religion,
       email,
       addmission_date,
       kelas,
-      section,
-      addmission_id,
       address,
       phone,
       short_bio,
@@ -246,14 +221,11 @@ class StudentController {
         mother_name,
         date_of_birth,
         father_occupation,
-        roll,
         blood_group,
         religion,
         email,
         addmission_date,
         kelas,
-        section,
-        addmission_id,
         address,
         phone,
         short_bio,

@@ -1,10 +1,14 @@
 const classModel = require("../models/kelas");
+const TeacherModel = require("../models/teacher");
 
 class ClassController {
   static async createNewClass(req, res, next) {
     const { class_name, teacher, subject } = req.body;
     try {
       const result = await classModel.create({ class_name, teacher, subject });
+
+      await TeacherModel.findByIdAndUpdate(teacher, { kelas: result._id });
+
       if (!result) {
         return res.status(404).send("the class cannot be created");
       }
@@ -17,14 +21,21 @@ class ClassController {
     const { id } = req.params;
     const { class_name, teacher, subject } = req.body;
     try {
+      const isExist = await classModel.findById(id);
+      await TeacherModel.findByIdAndUpdate(isExist.teacher, { kelas: "" });
+
       const result = await classModel.findByIdAndUpdate(id, {
         class_name,
         teacher,
         subject,
       });
+
+      await TeacherModel.findByIdAndUpdate(teacher, { kelas: result._id });
+
       if (!result) {
         return res.status(404).send("the class cannot be updated");
       }
+
       res.send(result);
     } catch (error) {
       next(error);

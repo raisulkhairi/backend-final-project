@@ -1,5 +1,5 @@
 const subjectModel = require("../models/subject");
-
+const TeacherModel = require("../models/teacher");
 class SubjectController {
   static async createNewSubject(req, res, next) {
     const { subject_name, teacher_id, duration } = req.body;
@@ -9,6 +9,11 @@ class SubjectController {
         teacher_id,
         duration,
       });
+
+      await TeacherModel.findByIdAndUpdate(teacher_id, {
+        $push: { Subject: result._id },
+      });
+
       if (!result) {
         return res.status(404).send("the subject cannot be created");
       }

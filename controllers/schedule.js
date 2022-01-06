@@ -52,7 +52,14 @@ class ScheduleController {
 
   static async getAllSchedule(req, res, next) {
     try {
-      const result = await scheduleModel.find();
+      const result = await scheduleModel.find().populate({
+        path: "kelas",
+        select: ["class_name", "teacher"],
+        populate: {
+          path: "teacher",
+          select: ["first_name", "last_name", "email", "phone", "short_bio"],
+        },
+      });
 
       if (!result) {
         return res.status(404).send("the schedule cannot be showed");
@@ -65,7 +72,14 @@ class ScheduleController {
   static async getScheduleByID(req, res, next) {
     const { id } = req.params;
     try {
-      const schedule = await scheduleModel.findById(id);
+      const schedule = await scheduleModel.findById(id).populate({
+        path: "kelas",
+        select: ["class_name", "teacher"],
+        populate: {
+          path: "teacher",
+          select: ["first_name", "last_name", "email", "phone", "short_bio"],
+        },
+      });
       if (!schedule) {
         return res.status(500).json({ success: false });
       }

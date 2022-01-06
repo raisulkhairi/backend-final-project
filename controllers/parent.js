@@ -126,7 +126,6 @@ class ParentController {
       email,
       address,
       phone,
-      role,
       password,
     } = req.body;
 
@@ -156,8 +155,6 @@ class ParentController {
         email,
         address,
         phone,
-        role,
-
         password: newPassword,
         image: `${basePath}${fileName}`,
       },
