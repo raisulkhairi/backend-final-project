@@ -2,14 +2,45 @@ const scheduleModel = require("../models/schedule");
 
 class ScheduleController {
   static async createNewSchedule(req, res, next) {
-    const { title, start, end, allDay } = req.body;
+    const {
+      kelas,
+      title,
+      daysOfWeek,
+      start,
+      startTime,
+      endTime,
+      end,
+      color,
+      allDay,
+    } = req.body;
+    let result;
+
     try {
-      const result = await scheduleModel.create({
-        title,
-        start,
-        end,
-        allDay,
-      });
+      if (daysOfWeek) {
+        result = await scheduleModel.create({
+          kelas,
+          title,
+          daysOfWeek,
+          start,
+          startTime,
+          endTime,
+          end,
+          color,
+          allDay,
+        });
+      } else {
+        result = await scheduleModel.create({
+          kelas,
+          title,
+          daysOfWeek: null,
+          start,
+          startTime,
+          endTime,
+          end,
+          color,
+          allDay,
+        });
+      }
       if (!result) {
         return res.status(404).send("the schedule cannot be created");
       }
@@ -18,23 +49,7 @@ class ScheduleController {
       next(error);
     }
   }
-  //   static async editClass(req, res, next) {
-  //     const { id } = req.params;
-  //     const { class_name, teacher, subject } = req.body;
-  //     try {
-  //       const result = await classModel.findByIdAndUpdate(id, {
-  //         class_name,
-  //         teacher,
-  //         subject,
-  //       });
-  //       if (!result) {
-  //         return res.status(404).send("the class cannot be updated");
-  //       }
-  //       res.send(result);
-  //     } catch (error) {
-  //       next(error);
-  //     }
-  //   }
+
   static async getAllSchedule(req, res, next) {
     try {
       const result = await scheduleModel.find();
@@ -43,6 +58,18 @@ class ScheduleController {
         return res.status(404).send("the schedule cannot be showed");
       }
       res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async getScheduleByID(req, res, next) {
+    const { id } = req.params;
+    try {
+      const schedule = await scheduleModel.findById(id);
+      if (!schedule) {
+        return res.status(500).json({ success: false });
+      }
+      res.send(schedule);
     } catch (error) {
       next(error);
     }
@@ -60,14 +87,20 @@ class ScheduleController {
       next(error);
     }
   }
+
+  // For Event
   static async updateDragDropSchedule(req, res, next) {
     try {
       const arrSchedule = req.body;
-      console.log(arrSchedule);
       arrSchedule.forEach(async (element) => {
         await scheduleModel.findOneAndUpdate(
           { _id: element.id },
-          { title: element.title, start: element.start, end: element.end }
+          {
+            title: element.title,
+            start: element.start,
+            end: element.end,
+            color: element.color,
+          }
         );
       });
       res.send(req.body);
@@ -75,30 +108,48 @@ class ScheduleController {
       next(error);
     }
   }
-  //   static async getClassByID(req, res, next) {
-  //     const { id } = req.params;
-  //     try {
-  //       const result = await classModel
-  //         .findById(id)
-  //         .populate({
-  //           path: "subject",
-  //           populate: {
-  //             path: "teacher_id",
-  //             select: ["first_name", "last_name", "email", "phone", "short_bio"],
-  //           },
-  //         })
-  //         .populate({
-  //           path: "teacher",
-  //           select: ["first_name", "last_name", "email", "phone", "short_bio"],
-  //         });
-  //       if (!result) {
-  //         return res.status(404).send("the class cannot be showed");
-  //       }
-  //       res.send(result);
-  //     } catch (error) {
-  //       next(error);
-  //     }
-  //   }
+
+  static async editScheduleByID(req, res, next) {
+    const { id } = req.params;
+    const { title, color } = req.body;
+
+    try {
+      const result = await scheduleModel.findOneAndUpdate(
+        { _id: id },
+        {
+          title,
+          color,
+        },
+        {
+          new: true,
+        }
+      );
+      if (!result) {
+        return res.status(404).send("the schedule cannot be edited");
+      }
+      res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getTempSchedule(req, res, next) {
+    try {
+      let filter1 = {};
+      let filter2 = {};
+      if (req.query.schedule) {
+        filter1 = { kelas: req.query.schedule.split(",") };
+        filter2 = { kelas: { $exists: false } };
+      }
+      const scheduleList = await scheduleModel.find({
+        $or: [filter1, filter2],
+      });
+      if (!scheduleList) {
+        res.status(500).json({ success: false });
+      }
+      res.status(201).json(scheduleList);
+    } catch (error) {}
+  }
 }
 
 module.exports = ScheduleController;

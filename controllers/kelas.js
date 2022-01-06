@@ -77,6 +77,21 @@ class ClassController {
       next(error);
     }
   }
+
+  // static async getTempClass(req, res, next) {
+  //   try {
+  //     let filter = {};
+  //     if (req.query.kelas) {
+  //       filter = { _id: req.query.kelas.split(",") };
+  //     }
+
+  //     const classList = await classModel.find(filter);
+  //     if (!classList) {
+  //       res.status(500).json({ success: false });
+  //     }
+  //     res.status(201).json(classList);
+  //   } catch (error) {}
+  // }
 }
 
 module.exports = ClassController;

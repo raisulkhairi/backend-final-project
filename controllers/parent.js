@@ -189,8 +189,6 @@ class ParentController {
       child,
     } = req.body;
 
-    console.log(req.body);
-
     // Image Handler
     const fileName = req.file.filename;
     const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;

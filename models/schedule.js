@@ -1,17 +1,31 @@
 const mongoose = require("mongoose");
 
 const scheduleSchema = mongoose.Schema({
+  kelas: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Class",
+  },
   title: {
     type: String,
-    required: true,
+  },
+  daysOfWeek: {
+    type: Array,
   },
   start: {
     type: Date,
-    required: true,
+  },
+  startTime: {
+    type: String,
+  },
+  endTime: {
+    type: String,
   },
   end: {
     type: Date,
-    required: true,
+  },
+  color: {
+    type: String,
+    default: "3238a8",
   },
   allDay: {
     type: Boolean,
@@ -24,6 +38,5 @@ scheduleSchema.virtual("id").get(function () {
 scheduleSchema.set("toJSON", {
   virtuals: true,
 });
-
 const scheduleModel = mongoose.model("Schedule", scheduleSchema);
 module.exports = scheduleModel;

@@ -300,26 +300,36 @@ class StudentController {
   }
   static async getStudentByID(req, res, next) {
     const { id } = req.params;
-    const student = await StudentModel.findById(id).populate({
-      path: "kelas",
-      populate: [
-        {
-          path: "teacher",
-          select: ["first_name", "last_name", "email", "phone", "short_bio"],
-        },
-        {
-          path: "subject",
-          populate: {
-            path: "teacher_id",
+    try {
+      const student = await StudentModel.findById(id).populate({
+        path: "kelas",
+        populate: [
+          {
+            path: "teacher",
             select: ["first_name", "last_name", "email", "phone", "short_bio"],
           },
-        },
-      ],
-    });
-    if (!student) {
-      return res.status(500).json({ success: false });
+          {
+            path: "subject",
+            populate: {
+              path: "teacher_id",
+              select: [
+                "first_name",
+                "last_name",
+                "email",
+                "phone",
+                "short_bio",
+              ],
+            },
+          },
+        ],
+      });
+      if (!student) {
+        return res.status(500).json({ success: false });
+      }
+      res.send(student);
+    } catch (error) {
+      next(error);
     }
-    res.send(student);
   }
 }
 

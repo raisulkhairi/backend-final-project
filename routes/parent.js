@@ -48,9 +48,9 @@ parentRoute.put(
   uploadOptions.single("image"),
   ParentController.editByHeadmaster
 );
+parentRoute.get("/count", ParentController.parentCount);
 
 parentRoute.get("/", ParentController.getAllParentData);
 parentRoute.get("/:id", ParentController.getParentByID);
-parentRoute.get("/count", ParentController.parentCount);
 
 module.exports = parentRoute;
