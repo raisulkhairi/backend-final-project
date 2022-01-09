@@ -20,6 +20,9 @@ const studentSchema = mongoose.Schema({
     enum: ["Islam", "Hindu", "Christian", "Buddish", "Others"],
   },
   email: { type: String },
+  year_academic: {
+    type: String,
+  },
   addmission_date: { type: Date },
   kelas: {
     type: mongoose.Schema.Types.ObjectId,

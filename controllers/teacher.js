@@ -215,7 +215,9 @@ class TeacherController {
   }
 
   static async getAllTeacher(req, res, next) {
-    const teacherList = await TeacherModel.find();
+    const teacherList = await TeacherModel.find()
+      .populate("kelas")
+      .populate("Subject");
     if (!teacherList) {
       return res.status(500).json({ success: false });
     }

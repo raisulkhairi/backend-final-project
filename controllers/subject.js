@@ -47,7 +47,6 @@ class SubjectController {
     }
     res.send(subjectList);
   }
-
   static async getSubjectByID(req, res, next) {
     const { id } = req.params;
     const subject = await subjectModel.findById(id).populate({
