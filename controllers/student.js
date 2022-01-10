@@ -303,6 +303,23 @@ class StudentController {
       next(error);
     }
   }
+
+  static async getFemaleStudent(req, res, next) {
+    try {
+      const totalFemaleStudent = await StudentModel.find({ gender: "Female" });
+      return res.send({ totalFemaleStudent: totalFemaleStudent.length });
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async getMaleStudent(req, res, next) {
+    try {
+      const totalMaleStudent = await StudentModel.find({ gender: "Male" });
+      return res.send({ totalMaleStudent: totalMaleStudent.length });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = StudentController;

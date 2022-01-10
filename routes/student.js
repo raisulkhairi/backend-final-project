@@ -50,6 +50,8 @@ studentRoute.put(
 );
 
 studentRoute.get("/count", StudentController.studentCount);
+studentRoute.get("/totalMale", StudentController.getMaleStudent);
+studentRoute.get("/totalFemale", StudentController.getFemaleStudent);
 
 studentRoute.get("/", StudentController.getAllStudentData);
 studentRoute.get("/:id", StudentController.getStudentByID);
