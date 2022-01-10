@@ -15,6 +15,9 @@ const subjectSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  link: {
+    type: String,
+  },
 });
 
 subjectSchema.virtual("id").get(function () {
