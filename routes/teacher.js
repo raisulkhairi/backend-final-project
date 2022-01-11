@@ -43,5 +43,6 @@ teacherRoute.put(
 teacherRoute.get("/count", TeacherController.teacherCount);
 teacherRoute.get("/", TeacherController.getAllTeacher);
 teacherRoute.get("/:id", TeacherController.getTeacherByID);
+teacherRoute.post("/scorring/:id", TeacherController.setScoreBySubjectID);
 
 module.exports = teacherRoute;

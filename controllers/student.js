@@ -2,6 +2,8 @@ const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 
 const StudentModel = require("../models/student");
+const classModel = require("../models/kelas");
+const { findByIdAndDelete, findByIdAndUpdate } = require("../models/kelas");
 class StudentController {
   // Dilakukan Oleh Headmaster
   static async createNewStudent(req, res, next) {
@@ -45,6 +47,18 @@ class StudentController {
     try {
       const user_password = randomPassword();
 
+      const subjectForStudent = (
+        await classModel.findById(kelas).select("subject")
+      ).subject;
+
+      console.log("SUBJECT :", subjectForStudent);
+      // await StudentModel.updateMany(
+      //   { kelas: result._id },
+      //   {
+      //     $set: { subject: result.subject },
+      //   }
+      // );
+
       const result = await StudentModel.create({
         first_name,
         last_name,
@@ -66,7 +80,21 @@ class StudentController {
         role,
       });
 
-      if (!result) {
+      subjectForStudent.forEach(async (element) => {
+        await StudentModel.findByIdAndUpdate(result.id, {
+          $push: {
+            subject: { subject_name: element },
+          },
+        });
+      });
+
+      const newData1 = await StudentModel.findByIdAndUpdate(result.id, {
+        $push: {
+          subject: { subject_name: subjectForStudent[0] },
+        },
+      });
+
+      if (!result && !newData1) {
         return res.status(404).send("the student cannot be created");
       }
 
@@ -120,7 +148,7 @@ class StudentController {
         }
       );
 
-      res.send(result);
+      res.send(newData1);
     } catch (error) {
       next(error);
     }
@@ -242,22 +270,35 @@ class StudentController {
     res.send(user);
   }
   static async getAllStudentData(req, res, next) {
-    const studentList = await StudentModel.find().populate({
-      path: "kelas",
-      populate: [
-        {
-          path: "teacher",
-          select: ["first_name", "last_name", "email", "phone", "short_bio"],
-        },
-        {
-          path: "subject",
-          populate: {
-            path: "teacher_id",
+    const studentList = await StudentModel.find()
+      .populate({
+        path: "kelas",
+        populate: [
+          {
+            path: "teacher",
             select: ["first_name", "last_name", "email", "phone", "short_bio"],
           },
+          {
+            path: "subject",
+            populate: {
+              path: "teacher_id",
+              select: [
+                "first_name",
+                "last_name",
+                "email",
+                "phone",
+                "short_bio",
+              ],
+            },
+          },
+        ],
+      })
+      .populate({
+        path: "subject",
+        populate: {
+          path: "subject_name",
         },
-      ],
-    });
+      });
     if (!studentList) {
       return res.status(500).json({ success: false });
     }

@@ -2,6 +2,7 @@ const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 
 const TeacherModel = require("../models/teacher");
+const StudentModel = require("../models/student");
 class TeacherController {
   // Dilakukan Oleh Headmaster
   static async createNewTeacher(req, res, next) {
@@ -239,6 +240,19 @@ class TeacherController {
       return res.status(500).json({ success: false });
     }
     res.send(teacher);
+  }
+
+  static async setScoreBySubjectID(req, res, next) {
+    const { id } = req.params;
+    const { id_student, kelas, nilai } = req.body;
+    console.log(req.params);
+    console.log();
+    console.log(req.body);
+    console.log();
+    const studentData = (await StudentModel.find()).forEach((el) => {
+      console.log("el", el.kelas.toS);
+    });
+    // console.log(studentData);
   }
 }
 

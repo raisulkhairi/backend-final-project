@@ -42,6 +42,18 @@ const studentSchema = mongoose.Schema({
     enum: ["active", "non-active"],
     default: "active",
   },
+  subject: [
+    {
+      subject_name: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Subject",
+      },
+      score_subject: {
+        type: String,
+        default: "",
+      },
+    },
+  ],
 });
 
 studentSchema.virtual("id").get(function () {

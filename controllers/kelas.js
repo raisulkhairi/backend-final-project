@@ -1,4 +1,5 @@
 const classModel = require("../models/kelas");
+
 const TeacherModel = require("../models/teacher");
 
 class ClassController {
