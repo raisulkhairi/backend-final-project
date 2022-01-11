@@ -203,6 +203,7 @@ class ScheduleController {
       next(error);
     }
   }
+
   static async getScheduleByID(req, res, next) {
     const { id } = req.params;
     try {

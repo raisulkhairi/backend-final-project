@@ -113,7 +113,7 @@ class TeacherController {
     }
   }
 
-  // Dilakukan Oleh Diri sendiri
+  // Dilakukan Oleh Diri sendiri (teacher)
   static async updateTeacher(req, res, next) {
     const userExist = await TeacherModel.findById(req.params.id);
     const {

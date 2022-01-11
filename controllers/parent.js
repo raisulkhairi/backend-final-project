@@ -112,6 +112,7 @@ class ParentController {
       next(error);
     }
   }
+
   //   Buat Parent
   static async editByParent(req, res, next) {
     const { id } = req.params;

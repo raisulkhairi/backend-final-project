@@ -28,6 +28,7 @@ class ScheduleController {
         ///cek apakah berupa event atau bukan
         // Semua ini event
         const validator1 = await scheduleModel.find();
+        let isTabrakan = false;
         validator1.forEach((element) => {
           if (element.start) {
             // klo true artinya ada event karena cuman event yang punya start
@@ -36,13 +37,13 @@ class ScheduleController {
 
             const endInMili = new Date(end).getTime(); // (e2)
             const endInMiliValidator1 = new Date(element.end).getTime(); //(e1)
-
             if (
               startInMiliValidator1 <= startInMili &&
               startInMili < endInMiliValidator1 &&
               endInMili <= endInMiliValidator1
             ) {
-              return res.json({ error: "Jadwal Event Bertabrakan" });
+              // return res.json({ error: "Jadwal Event Bertabrakan" });
+              isTabrakan = true;
             }
 
             if (
@@ -50,7 +51,8 @@ class ScheduleController {
               startInMili < endInMiliValidator1 &&
               endInMiliValidator1 <= endInMili
             ) {
-              return res.json({ error: "Jadwal Event Bertabrakan" });
+              // return res.json({ error: "Jadwal Event Bertabrakan" });
+              isTabrakan = true;
             }
 
             if (
@@ -58,31 +60,37 @@ class ScheduleController {
               startInMiliValidator1 < endInMili &&
               endInMili <= endInMiliValidator1
             ) {
-              return res.json({ error: "Jadwal Event Bertabrakan" });
+              // return res.json({ error: "Jadwal Event Bertabrakan" });
+              isTabrakan = true;
             }
             if (
               startInMili <= startInMiliValidator1 &&
               startInMiliValidator1 < endInMili &&
               endInMiliValidator1 <= endInMili
             ) {
-              return res.json({ error: "Jadwal Event Bertabrakan" });
+              // return res.json({ error: "Jadwal Event Bertabrakan" });
+              isTabrakan = true;
             }
           }
         });
 
-        result = await scheduleModel.create({
-          title,
-          daysOfWeek: null,
-          start,
-          end,
-          color,
-          allDay,
-        });
+        if (isTabrakan) {
+          return res.json({ error: "Jadwal Event Bertabrakan" });
+        } else {
+          result = await scheduleModel.create({
+            title,
+            daysOfWeek: null,
+            start,
+            end,
+            color,
+            allDay,
+          });
 
-        if (!result) {
-          return res.status(404).send("the schedule cannot be created");
+          if (!result) {
+            return res.status(404).send("the schedule cannot be created");
+          }
+          res.send(result);
         }
-        res.send(result);
       } else {
         // Bukan Event
         // Semua Data Jadwal Kelas Sama (A) dan di hari yang sama (Senin) []
@@ -368,7 +376,6 @@ class ScheduleController {
       next(error);
     }
   }
-  //{ "$in" : ["sushi"]} }
 
   static async getAllSchedule(req, res, next) {
     try {
