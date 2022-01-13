@@ -244,12 +244,13 @@ class TeacherController {
 
   static async setScoreBySubjectID(req, res, next) {
     const { id } = req.params;
-
+    console.log(req.params);
+    console.log(req.body);
     let isSuccess = true;
     req.body.forEach(async (el) => {
       const hasil = await StudentModel.findOneAndUpdate(
         {
-          _id: el.id_student,
+          _id: el.id,
           "subject.subject_name": id,
         },
         { $set: { "subject.$.score_subject": el.nilai } }
@@ -259,9 +260,9 @@ class TeacherController {
       }
     });
     if (isSuccess) {
-      res.send("Berhasil Scorring");
+      res.status(200).send({ pesan: "Berhasil Scorring" });
     } else {
-      res.send({ error: "Gagal Input Nilai" });
+      res.status(404).send({ error: "Gagal Input Nilai" });
     }
   }
 }

@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const StudentModel = require("../models/student");
 const classModel = require("../models/kelas");
 const { findByIdAndDelete, findByIdAndUpdate } = require("../models/kelas");
+const { all } = require("../routes/subject");
 class StudentController {
   // Dilakukan Oleh Headmaster
   static async createNewStudent(req, res, next) {
@@ -344,7 +345,6 @@ class StudentController {
       next(error);
     }
   }
-
   static async getFemaleStudent(req, res, next) {
     try {
       const totalFemaleStudent = await StudentModel.find({ gender: "Female" });
@@ -361,6 +361,22 @@ class StudentController {
       next(error);
     }
   }
+
+  static async getAllStudentBySubject(req, res, next) {
+    const { id } = req.params;
+    const idSubject = id;
+    const allStudent = await StudentModel.find({
+      "subject.subject_name": idSubject,
+    });
+
+    res.send(allStudent);
+  }
 }
 
 module.exports = StudentController;
+
+// StudentModel.findOneAndUpdate(
+//   {
+//     _id: el.id_student,
+//     "subject.subject_name": id,
+//   },

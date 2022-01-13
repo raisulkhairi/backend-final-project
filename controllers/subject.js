@@ -3,6 +3,7 @@ const TeacherModel = require("../models/teacher");
 class SubjectController {
   static async createNewSubject(req, res, next) {
     const { subject_name, teacher_id, duration } = req.body;
+    console.log(req.body);
     try {
       const result = await subjectModel.create({
         subject_name,

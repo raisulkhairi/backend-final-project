@@ -89,6 +89,19 @@ class ClassController {
       next(error);
     }
   }
+  static async getClassBySubject(req, res, next) {
+    const { id } = req.params;
+    try {
+      const result = await classModel.find({ subject: id });
+
+      if (!result) {
+        return res.status(404).send("the class cannot be showed");
+      }
+      res.send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
 
   // static async getTempClass(req, res, next) {
   //   try {

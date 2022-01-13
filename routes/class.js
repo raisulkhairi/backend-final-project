@@ -6,5 +6,6 @@ classRoute.post("/", ClassController.createNewClass);
 classRoute.put("/:id", ClassController.editClass);
 classRoute.get("/", ClassController.getAllClass);
 classRoute.get("/:id", ClassController.getClassByID);
+classRoute.get("/getClassBySubject/:id", ClassController.getClassBySubject);
 
 module.exports = classRoute;

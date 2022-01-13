@@ -55,5 +55,9 @@ studentRoute.get("/totalFemale", StudentController.getFemaleStudent);
 
 studentRoute.get("/", StudentController.getAllStudentData);
 studentRoute.get("/:id", StudentController.getStudentByID);
+studentRoute.get(
+  "/getAllStudentRelatedToTheSubject/:id",
+  StudentController.getAllStudentBySubject
+);
 
 module.exports = studentRoute;
