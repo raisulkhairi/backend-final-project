@@ -10,7 +10,7 @@ const teacherSchema = mongoose.Schema({
   date_of_birth: { type: Date },
   blood_group: {
     type: String,
-    enum: ["A-", "B+", "B-", "O+", "O-"],
+    enum: ["A-", "A+", "B+", "B-", "O+", "O-", "AB-", "AB+"],
   },
   religion: {
     type: String,

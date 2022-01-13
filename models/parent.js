@@ -11,7 +11,7 @@ const parentSchema = mongoose.Schema({
   occupation: { type: String },
   blood_group: {
     type: String,
-    enum: ["A-", "B+", "B-", "O+", "O-"],
+    enum: ["A-", "A+", "B+", "B-", "O+", "O-", "AB-", "AB+"],
   },
   religion: {
     type: String,

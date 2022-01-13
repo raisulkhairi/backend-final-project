@@ -13,7 +13,7 @@ const studentSchema = mongoose.Schema({
   father_occupation: { type: String },
   blood_group: {
     type: String,
-    enum: ["A-", "B+", "B-", "O+", "O-"],
+    enum: ["A-", "A+", "B+", "B-", "O+", "O-", "AB-", "AB+"],
   },
   religion: {
     type: String,

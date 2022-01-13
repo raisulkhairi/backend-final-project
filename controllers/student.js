@@ -37,6 +37,7 @@ class StudentController {
       phone,
       short_bio,
       role,
+      year_academic,
     } = req.body;
 
     // Image Handler
@@ -69,6 +70,7 @@ class StudentController {
         short_bio,
         image: `${basePath}${fileName}`,
         role,
+        year_academic,
       });
 
       subjectForStudent.forEach(async (element) => {
@@ -91,25 +93,27 @@ class StudentController {
 
       const output = `
       <p>Your account has been created by the admin</p>
-      <h3>Account Details</h3>
+                  <h3>Account Details</h3>
       <ul>
-        <li>Name: ${first_name} ${last_name}</li>
-        <li>Password: ${user_password}</li>
-        <li>Role: ${role}</li>
-        <li>Gender: ${gender}</li>
-        <li>Father Name: ${father_name}</li>
-        <li>Mother Name: ${mother_name}</li>
-        <li>Date of Birth: ${date_of_birth}</li>
-        <li>Father Occupation: ${father_occupation}</li>
-        <li>Blood Group: ${blood_group}</li>
-        <li>Religion: ${religion}</li>
-        <li>Email: ${email}</li>
-        <li>Addmission Date: ${addmission_date}</li>
-        <li>Class: ${kelas}</li>
-        <li>Address: ${address}</li>
-        <li>Phone: ${phone}</li>
-        <li>Image: ${basePath}${fileName}</li>
-        <li>Short Bio: ${short_bio}</li>
+
+        <li>Year Academic      : ${year_academic}</li>
+        <li>Name               : ${first_name} ${last_name}</li>
+        <li>Password           : ${user_password}</li>
+        <li>Role               : ${role}</li>
+        <li>Gender             : ${gender}</li>
+        <li>Father Name        : ${father_name}</li>
+        <li>Mother Name        : ${mother_name}</li>
+        <li>Date of Birth      : ${date_of_birth}</li>
+        <li>Father Occupation  : ${father_occupation}</li>
+        <li>Blood Group        : ${blood_group}</li>
+        <li>Religion           : ${religion}</li>
+        <li>Email              : ${email}</li>
+        <li>Addmission Date    : ${addmission_date}</li>
+        <li>Class              : ${kelas}</li>
+        <li>Address            : ${address}</li>
+        <li>Phone              : ${phone}</li>
+        <li>Image              : ${basePath}${fileName}</li>
+        <li>Short Bio          : ${short_bio}</li>
       </ul>
       
       `;
