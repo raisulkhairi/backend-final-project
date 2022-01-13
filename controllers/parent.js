@@ -39,7 +39,7 @@ class ParentController {
 
     try {
       const user_password = randomPassword();
-
+      console.log("PASSS : ", user_password);
       const result = await ParentModel.create({
         first_name,
         last_name,
@@ -86,7 +86,7 @@ class ParentController {
         service: "gmail",
         auth: {
           user: "luarbiasaandika@gmail.com",
-          pass: "IndraMambuju1",
+          pass: "IndraMambuju2",
         },
       });
 

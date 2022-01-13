@@ -41,6 +41,7 @@ class TeacherController {
 
     try {
       const user_password = randomPassword();
+      console.log("pass : ", user_password);
       const result = await TeacherModel.create({
         first_name,
         last_name,
@@ -87,7 +88,7 @@ class TeacherController {
         service: "gmail",
         auth: {
           user: "luarbiasaandika@gmail.com",
-          pass: "IndraMambuju1",
+          pass: "IndraMambuju2",
         },
       });
 

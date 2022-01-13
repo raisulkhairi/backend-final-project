@@ -3,8 +3,6 @@ const bcrypt = require("bcrypt");
 
 const StudentModel = require("../models/student");
 const classModel = require("../models/kelas");
-const { findByIdAndDelete, findByIdAndUpdate } = require("../models/kelas");
-const { all } = require("../routes/subject");
 class StudentController {
   // Dilakukan Oleh Headmaster
   static async createNewStudent(req, res, next) {
@@ -47,18 +45,10 @@ class StudentController {
 
     try {
       const user_password = randomPassword();
-
+      console.log(user_password);
       const subjectForStudent = (
         await classModel.findById(kelas).select("subject")
       ).subject;
-
-      console.log("SUBJECT :", subjectForStudent);
-      // await StudentModel.updateMany(
-      //   { kelas: result._id },
-      //   {
-      //     $set: { subject: result.subject },
-      //   }
-      // );
 
       const result = await StudentModel.create({
         first_name,
@@ -128,10 +118,11 @@ class StudentController {
         service: "gmail",
         auth: {
           user: "luarbiasaandika@gmail.com",
-          pass: "IndraMambuju1",
+          pass: "IndraMambuju2",
         },
       });
 
+      res.send(newData1);
       transporter.sendMail(
         {
           from: '"Headmaster 👻" <luarbiasaandika@gmail.com>',
@@ -148,8 +139,6 @@ class StudentController {
           console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
         }
       );
-
-      res.send(newData1);
     } catch (error) {
       next(error);
     }
