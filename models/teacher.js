@@ -27,10 +27,12 @@ const teacherSchema = mongoose.Schema({
     type: String,
     enum: ["student", "headmaster", "teacher", "parent"],
   },
+  // Kelas yang di walikan
   kelas: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Class",
   },
+  // mapel yang diajar
   Subject: [
     {
       type: mongoose.Schema.Types.ObjectId,

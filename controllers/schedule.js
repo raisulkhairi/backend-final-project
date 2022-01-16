@@ -1,6 +1,9 @@
 const scheduleModel = require("../models/schedule");
 const subjectModel = require("../models/subject");
+const TeacherModel = require("../models/teacher");
+const StudentModel = require("../models/student");
 class ScheduleController {
+  // Only By Headmaster
   static async createNewSchedule(req, res, next) {
     const {
       kelas,
@@ -377,6 +380,7 @@ class ScheduleController {
     }
   }
 
+  // Only By Headmaster
   static async getAllSchedule(req, res, next) {
     try {
       const result = await scheduleModel.find().populate({
@@ -396,6 +400,8 @@ class ScheduleController {
       next(error);
     }
   }
+
+  // Semua Make
   static async getScheduleByID(req, res, next) {
     const { id } = req.params;
     try {
@@ -416,6 +422,7 @@ class ScheduleController {
     }
   }
 
+  // Only By Headmaster
   static async deleteSchedule(req, res, next) {
     const { id } = req.params;
     try {
@@ -429,7 +436,7 @@ class ScheduleController {
     }
   }
 
-  // For Event
+  // For Event (Tidak Di perlukan lagi)
   static async updateDragDropSchedule(req, res, next) {
     try {
       const arrSchedule = req.body;
@@ -450,6 +457,7 @@ class ScheduleController {
     }
   }
 
+  // Only for headmaster (Tidak Di perlukan lagi)
   static async editScheduleByID(req, res, next) {
     const { id } = req.params;
     const { title, color } = req.body;
@@ -474,6 +482,7 @@ class ScheduleController {
     }
   }
 
+  // Only By Headmaster
   static async getTempSchedule(req, res, next) {
     try {
       let filter1 = {};
@@ -490,6 +499,116 @@ class ScheduleController {
       }
       res.status(201).json(scheduleList);
     } catch (error) {}
+  }
+
+  // Only By Teacher
+  static async getScheduleByTeacher(req, res, next) {
+    const { id } = req.params;
+    try {
+      const dataTeacher = await TeacherModel.findById(id)
+        .populate("kelas")
+        .populate("Subject");
+
+      const relatedSubject = dataTeacher.Subject.map((el) => {
+        return el.subject_name;
+      });
+
+      const allSchedule = await scheduleModel
+        .find({ kelas: { $exists: true } })
+        .populate({
+          path: "kelas",
+          select: ["class_name", "teacher"],
+          populate: {
+            path: "teacher",
+            select: ["first_name", "last_name", "email", "phone", "short_bio"],
+          },
+        });
+
+      const filteredSchedule = allSchedule.filter((el) => {
+        const isExist = relatedSubject.includes(el.title);
+        if (isExist) {
+          return el;
+        }
+      });
+      if (!filteredSchedule) {
+        return res.status(500).json({ success: false });
+      }
+      res.send(filteredSchedule);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Only By Student
+  static async getScheduleByStudent(req, res, next) {
+    const { id } = req.params;
+    try {
+      const dataStudent = await StudentModel.findById(id)
+        .populate({
+          path: "kelas",
+          populate: [
+            {
+              path: "teacher",
+              select: [
+                "first_name",
+                "last_name",
+                "email",
+                "phone",
+                "short_bio",
+              ],
+            },
+            {
+              path: "subject",
+              populate: {
+                path: "teacher_id",
+                select: [
+                  "first_name",
+                  "last_name",
+                  "email",
+                  "phone",
+                  "short_bio",
+                ],
+              },
+            },
+          ],
+        })
+        .populate({
+          path: "subject",
+          populate: {
+            path: "subject_name",
+          },
+        });
+
+      // console.log("DATA STUDENT : ", dataStudent.kelas.subject);
+
+      const relatedSubject = dataStudent.kelas.subject.map((el) => {
+        return el.subject_name;
+      });
+
+      const allSchedule = await scheduleModel
+        .find({ kelas: { $exists: true } })
+        .populate({
+          path: "kelas",
+          select: ["class_name", "teacher"],
+          populate: {
+            path: "teacher",
+            select: ["first_name", "last_name", "email", "phone", "short_bio"],
+          },
+        });
+
+      const filteredSchedule = allSchedule.filter((el) => {
+        const isExist = relatedSubject.includes(el.title);
+        if (isExist) {
+          return el;
+        }
+      });
+      if (!filteredSchedule) {
+        return res.status(500).json({ success: false });
+      }
+      res.send(filteredSchedule);
+    } catch (error) {
+      next(error);
+    }
   }
 }
 

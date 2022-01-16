@@ -4,6 +4,9 @@ const multer = require("multer");
 const studentRoute = express.Router();
 const StudentController = require("./../controllers/student");
 
+// Auth Autho
+const AuthJWT = require("../helper/authJWT");
+
 // Image Input
 const FILE_TYPE_MAP = {
   "image/png": "png",
@@ -29,25 +32,45 @@ const storage = multer.diskStorage({
 
 const uploadOptions = multer({ storage: storage });
 
+// Only By Headmaster
 studentRoute.post(
   "/register",
   uploadOptions.single("image"),
   StudentController.createNewStudent
 );
 
+// Only By Student
+studentRoute.put(
+  "/bystudent/image/:id",
+  uploadOptions.single("image"),
+  StudentController.editStudentImageByStudent
+);
+
+// Buat Headmaster
+studentRoute.put("/status/:id", StudentController.editStatus);
+
 // Buat Student
 studentRoute.put(
   "/bystudent/:id",
-  uploadOptions.single("image"),
+  AuthJWT.authentication,
   StudentController.editStudent
 );
 
 // Buat Headmaster
 studentRoute.put(
-  "/byheadmaster/:id",
+  "/byheadmaster/image/:id",
   uploadOptions.single("image"),
+  StudentController.editStudentImageByHeadmaster
+);
+
+// Buat Headmaster
+studentRoute.put(
+  "/byheadmaster/:id",
   StudentController.editStudentByHeadmaster
 );
+
+// Buat Student
+studentRoute.get("/login", StudentController.studentLogin);
 
 studentRoute.get("/count", StudentController.studentCount);
 studentRoute.get("/totalMale", StudentController.getMaleStudent);

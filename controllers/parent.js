@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 
 const ParentModel = require("../models/parent");
 class ParentController {
+  // Only By Headmaster
   static async createNewParent(req, res, next) {
     // Random Password Handler
     const randomPassword = () => {
@@ -29,7 +30,6 @@ class ParentController {
       email,
       address,
       phone,
-      role,
       child,
     } = req.body;
 
@@ -39,7 +39,6 @@ class ParentController {
 
     try {
       const user_password = randomPassword();
-      console.log("PASSS : ", user_password);
       const result = await ParentModel.create({
         first_name,
         last_name,
@@ -51,7 +50,7 @@ class ParentController {
         email,
         address,
         phone,
-        role,
+        role: "parent",
         child,
         password: bcrypt.hashSync(user_password, 10),
         image: `${basePath}${fileName}`,
@@ -67,7 +66,7 @@ class ParentController {
       <ul>
         <li>Name: ${first_name} ${last_name}</li>
         <li>Password: ${user_password}</li>
-        <li>Role: ${role}</li>
+        <li>Role: Parent</li>
         <li>Gender: ${gender}</li>
         <li>Date of Birth: ${date_of_birth}</li>
         <li>Occupation: ${occupation}</li>
@@ -113,7 +112,7 @@ class ParentController {
     }
   }
 
-  //   Buat Parent
+  // Only By Parent
   static async editByParent(req, res, next) {
     const { id } = req.params;
     const {
@@ -139,9 +138,9 @@ class ParentController {
       newPassword = userExist.password;
     }
 
-    // Image Handler
-    const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+    // // Image Handler
+    // const fileName = req.file.filename;
+    // const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
 
     const user = await ParentModel.findByIdAndUpdate(
       id,
@@ -157,7 +156,7 @@ class ParentController {
         address,
         phone,
         password: newPassword,
-        image: `${basePath}${fileName}`,
+        // image: `${basePath}${fileName}`,
       },
       { new: true }
     );
@@ -168,7 +167,28 @@ class ParentController {
     res.send(user);
   }
 
-  //   Buat HeadMaster
+  // Only By Parent
+  static async editParentImageByParent(req, res, next) {
+    const { id } = req.params;
+    // Image Handler
+    const fileName = req.file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+
+    const user = await ParentModel.findByIdAndUpdate(
+      id,
+      {
+        image: `${basePath}${fileName}`,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).send("the parent image cannot be updated");
+    }
+    res.send(user);
+  }
+
+  // Only By HeadMaster
   static async editByHeadmaster(req, res, next) {
     const { id } = req.params;
     const {
@@ -182,14 +202,13 @@ class ParentController {
       email,
       address,
       phone,
-      role,
       status,
       child,
     } = req.body;
 
-    // Image Handler
-    const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+    // // Image Handler
+    // const fileName = req.file.filename;
+    // const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
 
     const user = await ParentModel.findByIdAndUpdate(
       id,
@@ -204,8 +223,7 @@ class ParentController {
         email,
         address,
         phone,
-        role,
-        image: `${basePath}${fileName}`,
+        // image: `${basePath}${fileName}`,
         status,
         child,
       },
@@ -218,6 +236,46 @@ class ParentController {
     res.send(user);
   }
 
+  // Only By HeadMaster
+  static async editParentImageByHeadMaster(req, res, next) {
+    const { id } = req.params;
+    // Image Handler
+    const fileName = req.file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+
+    const user = await ParentModel.findByIdAndUpdate(
+      id,
+      {
+        image: `${basePath}${fileName}`,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).send("the parent image cannot be updated");
+    }
+    res.send(user);
+  }
+
+  // Only By Headmaster
+  static async editStatus(req, res, next) {
+    const { id } = req.params;
+    const { status } = req.body;
+    const user = await ParentModel.findByIdAndUpdate(
+      id,
+      {
+        status,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).send("the parent status cannot be updated");
+    }
+    res.send(user);
+  }
+
+  // Only By Headmaster
   static async getAllParentData(req, res, next) {
     const parentList = await ParentModel.find().populate({
       path: "child",
@@ -250,6 +308,7 @@ class ParentController {
     res.send(parentList);
   }
 
+  // ??
   static async getParentByID(req, res, next) {
     const { id } = req.params;
 
@@ -283,6 +342,8 @@ class ParentController {
     }
     res.send(parent);
   }
+
+  // ??
   static async parentCount(req, res, next) {
     const totalParent = await ParentModel.countDocuments();
     if (!totalParent) {

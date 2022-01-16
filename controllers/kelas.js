@@ -3,10 +3,14 @@ const classModel = require("../models/kelas");
 const TeacherModel = require("../models/teacher");
 
 class ClassController {
+  // Only By Headmaster
   static async createNewClass(req, res, next) {
     const { class_name, teacher, subject } = req.body;
     try {
-      const result = await classModel.create({ class_name, teacher, subject });
+      const result = await classModel.create(
+        { class_name, teacher, subject },
+        { new: true }
+      );
 
       await TeacherModel.findByIdAndUpdate(teacher, { kelas: result._id });
 
@@ -18,6 +22,8 @@ class ClassController {
       next(error);
     }
   }
+
+  // Only By Headmaster
   static async editClass(req, res, next) {
     const { id } = req.params;
     const { class_name, teacher, subject } = req.body;
@@ -42,6 +48,8 @@ class ClassController {
       next(error);
     }
   }
+
+  // ??
   static async getAllClass(req, res, next) {
     try {
       const result = await classModel
@@ -65,6 +73,8 @@ class ClassController {
       next(error);
     }
   }
+
+  // ??
   static async getClassByID(req, res, next) {
     const { id } = req.params;
     try {
@@ -89,6 +99,8 @@ class ClassController {
       next(error);
     }
   }
+
+  // ??
   static async getClassBySubject(req, res, next) {
     const { id } = req.params;
     try {
@@ -102,21 +114,6 @@ class ClassController {
       next(error);
     }
   }
-
-  // static async getTempClass(req, res, next) {
-  //   try {
-  //     let filter = {};
-  //     if (req.query.kelas) {
-  //       filter = { _id: req.query.kelas.split(",") };
-  //     }
-
-  //     const classList = await classModel.find(filter);
-  //     if (!classList) {
-  //       res.status(500).json({ success: false });
-  //     }
-  //     res.status(201).json(classList);
-  //   } catch (error) {}
-  // }
 }
 
 module.exports = ClassController;

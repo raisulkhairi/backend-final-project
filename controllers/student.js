@@ -1,10 +1,12 @@
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
-
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+const JWT_SECRET = process.env.JWT_SECRET || "";
 const StudentModel = require("../models/student");
 const classModel = require("../models/kelas");
 class StudentController {
-  // Dilakukan Oleh Headmaster
+  // Only By Headmaster
   static async createNewStudent(req, res, next) {
     // Random Password Handler
     const randomPassword = () => {
@@ -31,13 +33,12 @@ class StudentController {
       blood_group,
       religion,
       email,
+      year_academic,
       addmission_date,
       kelas,
       address,
       phone,
       short_bio,
-      role,
-      year_academic,
     } = req.body;
 
     // Image Handler
@@ -46,7 +47,6 @@ class StudentController {
 
     try {
       const user_password = randomPassword();
-      console.log(user_password);
       const subjectForStudent = (
         await classModel.findById(kelas).select("subject")
       ).subject;
@@ -69,7 +69,7 @@ class StudentController {
         password: bcrypt.hashSync(user_password, 10),
         short_bio,
         image: `${basePath}${fileName}`,
-        role,
+        role: "student",
         year_academic,
       });
 
@@ -99,7 +99,7 @@ class StudentController {
         <li>Year Academic      : ${year_academic}</li>
         <li>Name               : ${first_name} ${last_name}</li>
         <li>Password           : ${user_password}</li>
-        <li>Role               : ${role}</li>
+        <li>Role               : Student</li>
         <li>Gender             : ${gender}</li>
         <li>Father Name        : ${father_name}</li>
         <li>Mother Name        : ${mother_name}</li>
@@ -114,9 +114,7 @@ class StudentController {
         <li>Phone              : ${phone}</li>
         <li>Image              : ${basePath}${fileName}</li>
         <li>Short Bio          : ${short_bio}</li>
-      </ul>
-      
-      `;
+      </ul>`;
 
       let transporter = nodemailer.createTransport({
         service: "gmail",
@@ -147,7 +145,8 @@ class StudentController {
       next(error);
     }
   }
-  // Dilakukan Oleh Siswa itu sendiri
+
+  // Only By Student
   static async editStudent(req, res, next) {
     const { id } = req.params;
     const {
@@ -175,9 +174,9 @@ class StudentController {
       newPassword = userExist.password;
     }
 
-    // Image Handler
-    const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+    // // Image Handler
+    // const fileName = req.file.filename;
+    // const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
 
     const user = await StudentModel.findByIdAndUpdate(
       id,
@@ -196,7 +195,7 @@ class StudentController {
         phone,
         short_bio,
         password: newPassword,
-        image: `${basePath}${fileName}`,
+        // image: `${basePath}${fileName}`,
       },
       { new: true }
     );
@@ -206,10 +205,33 @@ class StudentController {
     }
     res.send(user);
   }
-  // By Headmaster
+
+  // Only By Student
+  static async editStudentImageByStudent(req, res, next) {
+    const { id } = req.params;
+    // Image Handler
+    const fileName = req.file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+
+    const user = await StudentModel.findByIdAndUpdate(
+      id,
+      {
+        image: `${basePath}${fileName}`,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).send("the student image cannot be updated");
+    }
+    res.send(user);
+  }
+
+  // Only By Headmaster
   static async editStudentByHeadmaster(req, res, next) {
     const { id } = req.params;
     const {
+      year_academic,
       first_name,
       last_name,
       gender,
@@ -225,17 +247,18 @@ class StudentController {
       address,
       phone,
       short_bio,
-      role,
+      // role,
       status,
     } = req.body;
 
-    // Image Handler
-    const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+    // // Image Handler
+    // const fileName = req.file.filename;
+    // const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
 
     const user = await StudentModel.findByIdAndUpdate(
       id,
       {
+        year_academic,
         first_name,
         last_name,
         gender,
@@ -251,8 +274,8 @@ class StudentController {
         address,
         phone,
         short_bio,
-        role,
-        image: `${basePath}${fileName}`,
+        // role,
+        // image: `${basePath}${fileName}`,
         status,
       },
       { new: true }
@@ -263,6 +286,31 @@ class StudentController {
     }
     res.send(user);
   }
+
+  // Only By Headmaster
+  static async editStudentImageByHeadmaster(req, res, next) {
+    const { id } = req.params;
+    console.log("id : ", req.params);
+    console.log("filename", req.file);
+    // Image Handler
+    const fileName = req.file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+
+    const user = await StudentModel.findByIdAndUpdate(
+      id,
+      {
+        image: `${basePath}${fileName}`,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).send("the student image cannot be updated");
+    }
+    res.send(user);
+  }
+
+  // ??
   static async getAllStudentData(req, res, next) {
     const studentList = await StudentModel.find()
       .populate({
@@ -298,6 +346,8 @@ class StudentController {
     }
     res.send(studentList);
   }
+
+  // Only By Headmaster
   static async studentCount(req, res, next) {
     const totalStudent = await StudentModel.countDocuments();
     if (!totalStudent) {
@@ -305,6 +355,26 @@ class StudentController {
     }
     res.send({ totalStudent });
   }
+
+  // Only By Headmaster
+  static async editStatus(req, res, next) {
+    const { id } = req.params;
+    const { status } = req.body;
+    const user = await StudentModel.findByIdAndUpdate(
+      id,
+      {
+        status,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).send("the student status cannot be updated");
+    }
+    res.send(user);
+  }
+
+  // ??
   static async getStudentByID(req, res, next) {
     const { id } = req.params;
     try {
@@ -338,6 +408,8 @@ class StudentController {
       next(error);
     }
   }
+
+  // Only By Headmaster
   static async getFemaleStudent(req, res, next) {
     try {
       const totalFemaleStudent = await StudentModel.find({ gender: "Female" });
@@ -346,6 +418,8 @@ class StudentController {
       next(error);
     }
   }
+
+  // Only By Headmaster
   static async getMaleStudent(req, res, next) {
     try {
       const totalMaleStudent = await StudentModel.find({ gender: "Male" });
@@ -355,6 +429,7 @@ class StudentController {
     }
   }
 
+  // Only By Teacher
   static async getAllStudentBySubject(req, res, next) {
     const { id } = req.params;
     const idSubject = id;
@@ -364,12 +439,40 @@ class StudentController {
 
     res.send(allStudent);
   }
+
+  // Only By Student
+  static async studentLogin(req, res, next) {
+    try {
+      console.log("Ini di eksekusi");
+      console.log(JWT_SECRET);
+
+      const user = await StudentModel.findOne({ email: req.body.email });
+
+      if (!user) {
+        return res.status(400).send("The user not found");
+      }
+
+      if (user && bcrypt.compareSync(req.body.password, user.password)) {
+        const token = jwt.sign(
+          {
+            userId: user.id,
+            email: user.email,
+            role: user.role,
+          },
+          JWT_SECRET,
+          {
+            expiresIn: "1d",
+          }
+        );
+
+        res.status(200).send({ user: user.email, token });
+      } else {
+        res.status(400).send("password is wrong!");
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = StudentController;
-
-// StudentModel.findOneAndUpdate(
-//   {
-//     _id: el.id_student,
-//     "subject.subject_name": id,
-//   },

@@ -29,15 +29,34 @@ const storage = multer.diskStorage({
 
 const uploadOptions = multer({ storage: storage });
 
+// Only By Headmaster
 teacherRoute.post(
   "/register",
   uploadOptions.single("image"),
   TeacherController.createNewTeacher
 );
+
+// Only By Teacher
 teacherRoute.put(
-  "/:id",
+  "/byteacher/image/:id",
   uploadOptions.single("image"),
-  TeacherController.updateTeacher
+  TeacherController.editTeacherImageByTeacher
+);
+
+// Only By Teacher
+teacherRoute.put("/byteacher/:id", TeacherController.updateTeacherByTeacher);
+
+// Only By Headmaster
+teacherRoute.put(
+  "/byheadmaster/image/:id",
+  uploadOptions.single("image"),
+  TeacherController.editTeacherImageByHeadmaster
+);
+
+// Only By Headmaster
+teacherRoute.put(
+  "/byheadmaster/:id",
+  TeacherController.updateTeacherByHeadmaster
 );
 
 teacherRoute.get("/count", TeacherController.teacherCount);

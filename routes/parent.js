@@ -36,18 +36,28 @@ parentRoute.post(
 );
 
 // Buat Parent
+parentRoute.put("/byparent/:id", ParentController.editByParent);
+
+// Buat Headmaster
+parentRoute.put("/status/:id", ParentController.editStatus);
+
+// Buat Parent
 parentRoute.put(
-  "/byparent/:id",
+  "/byparent/image/:id",
   uploadOptions.single("image"),
-  ParentController.editByParent
+  ParentController.editParentImageByParent
 );
 
 // Headmaster
+parentRoute.put("/byheadmaster/:id", ParentController.editByHeadmaster);
+
+// Headmaster
 parentRoute.put(
-  "/byheadmaster/:id",
-  uploadOptions.single("image"),
-  ParentController.editByHeadmaster
+  "/byheadmaster/image/:id",
+  ParentController.editParentImageByHeadMaster
 );
+
+// By Headmaster
 parentRoute.get("/count", ParentController.parentCount);
 
 parentRoute.get("/", ParentController.getAllParentData);

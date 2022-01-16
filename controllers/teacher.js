@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const TeacherModel = require("../models/teacher");
 const StudentModel = require("../models/student");
 class TeacherController {
-  // Dilakukan Oleh Headmaster
+  // Only By Headmaster
   static async createNewTeacher(req, res, next) {
     // Random Password Handler
     const randomPassword = () => {
@@ -32,7 +32,6 @@ class TeacherController {
       address,
       phone,
       short_bio,
-      role,
     } = req.body;
 
     // Image Handler
@@ -41,7 +40,6 @@ class TeacherController {
 
     try {
       const user_password = randomPassword();
-      console.log("pass : ", user_password);
       const result = await TeacherModel.create({
         first_name,
         last_name,
@@ -54,7 +52,7 @@ class TeacherController {
         address,
         phone,
         short_bio,
-        role,
+        role: "teacher",
         password: bcrypt.hashSync(user_password, 10),
         image: `${basePath}${fileName}`,
       });
@@ -69,7 +67,7 @@ class TeacherController {
       <ul>
         <li>Name: ${first_name} ${last_name}</li>
         <li>Password: ${user_password}</li>
-        <li>Role: ${role}</li>
+        <li>Role: Teacher</li>
         <li>Gender: ${gender}</li>
         <li>Date of Birth: ${date_of_birth}</li>
         <li>Blood Group: ${blood_group}</li>
@@ -115,8 +113,9 @@ class TeacherController {
     }
   }
 
-  // Dilakukan Oleh Diri sendiri (teacher)
-  static async updateTeacher(req, res, next) {
+  // Only By Teacher
+  static async updateTeacherByTeacher(req, res, next) {
+    console.log("DATA TEACHER : ", req.body);
     const userExist = await TeacherModel.findById(req.params.id);
     const {
       first_name,
@@ -125,7 +124,6 @@ class TeacherController {
       date_of_birth,
       blood_group,
       religion,
-      addmission_date,
       email,
       address,
       phone,
@@ -140,9 +138,9 @@ class TeacherController {
       newPassword = userExist.password;
     }
 
-    // Image Handler
-    const fileName = req.file.filename;
-    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+    // // Image Handler
+    // const fileName = req.file.filename;
+    // const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
 
     const user = await TeacherModel.findByIdAndUpdate(
       req.params.id,
@@ -153,13 +151,12 @@ class TeacherController {
         date_of_birth,
         blood_group,
         religion,
-        addmission_date,
         email,
         address,
         phone,
         short_bio,
         password: newPassword,
-        image: `${basePath}${fileName}`,
+        // image: `${basePath}${fileName}`,
       },
       { new: true }
     );
@@ -169,8 +166,29 @@ class TeacherController {
     }
     res.send(user);
   }
-  // Dilakukan Oleh Headmaster
-  static async updateTeacher(req, res, next) {
+  // Only By Teacher
+  static async editTeacherImageByTeacher(req, res, next) {
+    const { id } = req.params;
+    // Image Handler
+    const fileName = req.file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+
+    const user = await TeacherModel.findByIdAndUpdate(
+      id,
+      {
+        image: `${basePath}${fileName}`,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).send("the teacher image cannot be updated");
+    }
+    res.send(user);
+  }
+
+  // Only By Headmaster
+  static async updateTeacherByHeadmaster(req, res, next) {
     const userExist = await TeacherModel.findById(req.params.id);
     const {
       first_name,
@@ -216,6 +234,30 @@ class TeacherController {
     res.send(user);
   }
 
+  // Only By Headmaster
+  static async editTeacherImageByHeadmaster(req, res, next) {
+    const { id } = req.params;
+    console.log("id : ", req.params);
+    console.log("filename", req.file);
+    // Image Handler
+    const fileName = req.file.filename;
+    const basePath = `${req.protocol}://${req.get("host")}/public/uploads/`;
+
+    const user = await TeacherModel.findByIdAndUpdate(
+      id,
+      {
+        image: `${basePath}${fileName}`,
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).send("the teacher image cannot be updated");
+    }
+    res.send(user);
+  }
+
+  // Only By Headmaster
   static async getAllTeacher(req, res, next) {
     const teacherList = await TeacherModel.find()
       .populate("kelas")
@@ -226,6 +268,7 @@ class TeacherController {
     res.send(teacherList);
   }
 
+  // Only By Headmaster
   static async teacherCount(req, res, next) {
     const totalTeacher = await TeacherModel.countDocuments();
     if (!totalTeacher) {
@@ -234,15 +277,19 @@ class TeacherController {
     res.send({ totalTeacher });
   }
 
+  // ??
   static async getTeacherByID(req, res, next) {
     const { id } = req.params;
-    const teacher = await TeacherModel.findById(id);
+    const teacher = await TeacherModel.findById(id)
+      .populate("kelas")
+      .populate("Subject");
     if (!teacher) {
       return res.status(500).json({ success: false });
     }
     res.send(teacher);
   }
 
+  // Only By Teacher
   static async setScoreBySubjectID(req, res, next) {
     const { id } = req.params;
     console.log(req.params);
