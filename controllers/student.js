@@ -473,6 +473,46 @@ class StudentController {
       next(error);
     }
   }
+
+  // Only By Headmaster and Teacher
+  static async getStudentsByClass(req, res, next) {
+    const { id } = req.params;
+    const idClass = id;
+    console.log("ID KELAS : ", idClass);
+    const allStudent = await StudentModel.find({
+      kelas: idClass,
+    })
+      .populate({
+        path: "kelas",
+        populate: [
+          {
+            path: "teacher",
+            select: ["first_name", "last_name", "email", "phone", "short_bio"],
+          },
+          {
+            path: "subject",
+            populate: {
+              path: "teacher_id",
+              select: [
+                "first_name",
+                "last_name",
+                "email",
+                "phone",
+                "short_bio",
+              ],
+            },
+          },
+        ],
+      })
+      .populate({
+        path: "subject",
+        populate: {
+          path: "subject_name",
+        },
+      });
+
+    res.send(allStudent);
+  }
 }
 
 module.exports = StudentController;

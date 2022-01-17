@@ -82,5 +82,9 @@ studentRoute.get(
   "/getAllStudentRelatedToTheSubject/:id",
   StudentController.getAllStudentBySubject
 );
+studentRoute.get(
+  "/getAllStudentRelatedToTheClass/:id",
+  StudentController.getStudentsByClass
+);
 
 module.exports = studentRoute;
